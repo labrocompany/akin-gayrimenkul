@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { Heart, BedDouble, Ruler, Car, MapPin } from "lucide-react";
+import { BedDouble, Ruler, Car, MapPin } from "lucide-react";
 import type { Listing } from "@/lib/listings";
+import { withBasePath } from "@/lib/paths";
 
 const featureIcons = [Ruler, BedDouble, Car, MapPin];
 
@@ -9,7 +10,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
     <div className="group bg-white rounded-2xl border border-border-soft overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-shadow">
       <div className="relative h-[170px] w-full">
         <Image
-          src={listing.image}
+          src={withBasePath(listing.image)}
           alt={listing.title}
           fill
           sizes="(min-width: 1024px) 25vw, 50vw"
@@ -22,13 +23,6 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         >
           {listing.status}
         </span>
-        <button
-          type="button"
-          aria-label="Favorilere ekle"
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center text-ink-soft hover:text-primary-500"
-        >
-          <Heart size={15} />
-        </button>
       </div>
 
       <div className="p-4">

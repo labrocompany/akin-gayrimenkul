@@ -20,6 +20,7 @@ import Button from "@/components/Button";
 import ListingCard from "@/components/ListingCard";
 import { listings, type ListingCategory } from "@/lib/listings";
 import { istanbulDistricts } from "@/lib/turkey";
+import { withBasePath } from "@/lib/paths";
 
 const tabs: { key: ListingCategory | "tumu"; label: string; icon: typeof Home }[] = [
   { key: "tumu", label: "Tümü", icon: Grid2x2 },
@@ -55,7 +56,7 @@ export default function PortfoylerPage() {
           </div>
           <div className="relative h-[220px] sm:h-[300px] lg:h-[340px] rounded-3xl overflow-hidden">
             <Image
-              src="/images/hero-home.jpg"
+              src={withBasePath("/images/hero-home.jpg")}
               alt="İstanbul manzaralı teras"
               fill
               priority
@@ -171,7 +172,7 @@ export default function PortfoylerPage() {
         <div className="bg-cream-dark rounded-2xl p-4 sm:p-6 grid lg:grid-cols-[1fr_1.3fr] gap-6 items-center">
           <div className="relative h-[200px] sm:h-[260px] rounded-2xl overflow-hidden">
             <Image
-              src="/images/project-banner.jpg"
+              src={withBasePath("/images/project-banner.jpg")}
               alt="Vadi Excellence Projesi"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"

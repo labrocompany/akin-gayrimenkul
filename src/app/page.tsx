@@ -24,6 +24,7 @@ import StatsRow from "@/components/StatsRow";
 import LeadMiniForm from "@/components/forms/LeadMiniForm";
 import { listings } from "@/lib/listings";
 import { offices } from "@/lib/site";
+import { withBasePath } from "@/lib/paths";
 
 const infoCards = [
   {
@@ -114,7 +115,7 @@ export default function HomePage() {
 
           <div className="relative h-[280px] sm:h-[360px] lg:h-[420px] rounded-3xl overflow-hidden">
             <Image
-              src="/images/hero-home.jpg"
+              src={withBasePath("/images/hero-home.jpg")}
               alt="İstanbul manzaralı teras"
               fill
               priority
@@ -207,7 +208,7 @@ export default function HomePage() {
         <div className="bg-cream-dark rounded-2xl p-6 sm:p-8 grid lg:grid-cols-[1fr_1fr] gap-8 items-center">
           <div className="relative h-[220px] sm:h-[260px] rounded-2xl overflow-hidden order-1">
             <Image
-              src="/images/build-project.jpg"
+              src={withBasePath("/images/build-project.jpg")}
               alt="Satış ofisi"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"

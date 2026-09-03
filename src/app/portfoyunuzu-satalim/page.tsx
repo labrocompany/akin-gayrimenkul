@@ -3,6 +3,7 @@ import { TrendingUp, Megaphone, Users, Handshake, Camera } from "lucide-react";
 import Button from "@/components/Button";
 import StatsRow from "@/components/StatsRow";
 import SellPortfolioForm from "@/components/forms/SellPortfolioForm";
+import { withBasePath } from "@/lib/paths";
 
 const processSteps = [
   { icon: TrendingUp, title: "Değerleme", description: "Uzman ekibimiz mülkünüzü analiz eder." },
@@ -46,7 +47,7 @@ export default function SellPortfolioPage() {
           </div>
           <div className="relative h-[260px] sm:h-[340px] lg:h-[400px] rounded-3xl overflow-hidden">
             <Image
-              src="/images/hero-satalim.jpg"
+              src={withBasePath("/images/hero-satalim.jpg")}
               alt="Modern villa"
               fill
               priority

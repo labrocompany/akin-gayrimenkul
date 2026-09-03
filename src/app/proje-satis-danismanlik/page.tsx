@@ -17,6 +17,7 @@ import Button from "@/components/Button";
 import StatsRow from "@/components/StatsRow";
 import CtaBanner from "@/components/CtaBanner";
 import ProjectRequestForm from "@/components/forms/ProjectRequestForm";
+import { withBasePath } from "@/lib/paths";
 
 const services = [
   {
@@ -93,7 +94,7 @@ export default function ProjectAdvisoryPage() {
           </div>
           <div className="relative h-[260px] sm:h-[340px] lg:h-[400px] rounded-3xl overflow-hidden">
             <Image
-              src="/images/hero-proje.jpg"
+              src={withBasePath("/images/hero-proje.jpg")}
               alt="Satış ofisi"
               fill
               priority
@@ -132,7 +133,7 @@ export default function ProjectAdvisoryPage() {
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6">
           <div className="relative h-[280px] lg:h-auto rounded-2xl overflow-hidden">
             <Image
-              src="/images/interior-lounge.jpg"
+              src={withBasePath("/images/interior-lounge.jpg")}
               alt="Satış ofisi iç mekan"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"

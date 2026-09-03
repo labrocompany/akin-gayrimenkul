@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Button from "./Button";
+import { withBasePath } from "@/lib/paths";
 
 export default function CtaBanner({
   title,
@@ -12,7 +13,7 @@ export default function CtaBanner({
     <section className="container-page py-10">
       <div className="relative rounded-2xl overflow-hidden bg-secondary-600">
         <Image
-          src={image}
+          src={withBasePath(image)}
           alt="İstanbul"
           fill
           sizes="100vw"

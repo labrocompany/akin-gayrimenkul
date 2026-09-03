@@ -5,6 +5,7 @@ import OfficeCard from "@/components/OfficeCard";
 import CtaBanner from "@/components/CtaBanner";
 import ContactForm from "@/components/forms/ContactForm";
 import { siteConfig, contactOffices } from "@/lib/site";
+import { withBasePath } from "@/lib/paths";
 
 const quickContacts = [
   {
@@ -63,7 +64,7 @@ export default function ContactPage() {
           </div>
           <div className="relative h-[260px] sm:h-[340px] lg:h-[400px] rounded-3xl overflow-hidden">
             <Image
-              src="/images/hero-iletisim.jpg"
+              src={withBasePath("/images/hero-iletisim.jpg")}
               alt="Akın Emlak satış ofisi"
               fill
               priority

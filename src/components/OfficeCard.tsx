@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Phone, ArrowRight } from "lucide-react";
+import { withBasePath } from "@/lib/paths";
 
 export default function OfficeCard({
   name,
@@ -19,7 +20,7 @@ export default function OfficeCard({
   return (
     <div className="bg-white rounded-2xl border border-border-soft p-3 flex gap-3 items-start hover:shadow-lg hover:shadow-black/5 transition-shadow">
       <div className="relative w-[76px] h-[76px] rounded-xl overflow-hidden shrink-0">
-        <Image src={image} alt={name} fill sizes="80px" className="object-cover" />
+        <Image src={withBasePath(image)} alt={name} fill sizes="80px" className="object-cover" />
       </div>
       <div className="min-w-0">
         <h4 className="font-semibold text-ink text-[13.5px] leading-snug">
