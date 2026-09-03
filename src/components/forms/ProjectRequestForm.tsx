@@ -57,7 +57,7 @@ export default function ProjectRequestForm() {
           <Field label="Proje Adı">
             <input type="text" placeholder="Proje adını giriniz" className="form-input" />
           </Field>
-          <Field label="Proje Konumu (İl)">
+          <Field label="Proje Konumu">
             <select className="form-select">
               <option value="">Seçiniz</option>
               {turkishProvinces.map((il) => (

@@ -19,6 +19,7 @@ import {
 import Button from "@/components/Button";
 import ListingCard from "@/components/ListingCard";
 import { listings, type ListingCategory } from "@/lib/listings";
+import { istanbulDistricts } from "@/lib/turkey";
 
 const tabs: { key: ListingCategory | "tumu"; label: string; icon: typeof Home }[] = [
   { key: "tumu", label: "Tümü", icon: Grid2x2 },
@@ -86,9 +87,9 @@ export default function PortfoylerPage() {
           <FilterField label="İlçe / Bölge">
             <select className="form-select">
               <option>Seçiniz</option>
-              <option>Küçükçekmece</option>
-              <option>Beşiktaş</option>
-              <option>Ataşehir</option>
+              {istanbulDistricts.map((ilce) => (
+                <option key={ilce}>{ilce}</option>
+              ))}
             </select>
           </FilterField>
           <FilterField label="Fiyat Aralığı">

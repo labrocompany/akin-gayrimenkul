@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
-import { turkishProvinces } from "@/lib/turkey";
+import { turkishProvinces, istanbulDistricts } from "@/lib/turkey";
 
 export default function LeadMiniForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -64,9 +64,9 @@ export default function LeadMiniForm() {
             </label>
             <select required className="form-select">
               <option value="">Seçiniz</option>
-              <option>Küçükçekmece</option>
-              <option>Beşiktaş</option>
-              <option>Ataşehir</option>
+              {istanbulDistricts.map((ilce) => (
+                <option key={ilce}>{ilce}</option>
+              ))}
             </select>
           </div>
         </div>
