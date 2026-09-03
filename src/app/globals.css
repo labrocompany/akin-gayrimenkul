@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf7f1;
+  --foreground: #211d18;
+}
+
+@theme inline {
+  --color-cream: #fbf7f1;
+  --color-cream-dark: #f4ede1;
+  --color-ink: #211d18;
+  --color-ink-soft: #4a453e;
+  --color-muted: #756e64;
+  --color-border-soft: #e8e0d3;
+
+  --color-primary-50: #fbf1e3;
+  --color-primary-100: #f3ddb7;
+  --color-primary-400: #cd9a4f;
+  --color-primary-500: #b97d2c;
+  --color-primary-600: #a06a22;
+  --color-primary-700: #7d521c;
+
+  --color-secondary-500: #4f5f34;
+  --color-secondary-600: #3f4c29;
+  --color-secondary-700: #333d21;
+
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-jakarta);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer utilities {
+  .container-page {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    height: 2.75rem;
+    box-sizing: border-box;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border-soft);
+    background: white;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    line-height: 2.75rem;
+    color: var(--color-ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--color-primary-500);
+  }
+
+  .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23756e64' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    text-overflow: ellipsis;
+  }
+
+  .form-textarea {
+    height: auto;
+    line-height: 1.5;
+    padding: 0.625rem 0.875rem;
+    resize: none;
+  }
+
+  .form-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-ink-soft);
+    margin-bottom: 0.375rem;
+    display: block;
+  }
+}
