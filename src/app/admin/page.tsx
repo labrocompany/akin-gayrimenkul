@@ -18,10 +18,12 @@ import { LogOut, Trash2, Inbox } from "lucide-react";
 import { db, auth } from "@/lib/firebase";
 import { useAdminUser } from "@/hooks/useAdminUser";
 import Logo from "@/components/Logo";
+import ListingsManager from "@/app/admin/ListingsManager";
 
 type Submission = { id: string } & DocumentData;
 
 const tabs = [
+  { key: "ilanlar", label: "Portföyler (Site)" },
   { key: "portfoyTalepleri", label: "Portföy Talepleri" },
   { key: "hizliTalepler", label: "Hızlı Talepler" },
   { key: "projeTalepleri", label: "Proje Talepleri" },
@@ -31,6 +33,7 @@ const tabs = [
 type TabKey = (typeof tabs)[number]["key"];
 
 const columnsByTab: Record<TabKey, { key: string; label: string }[]> = {
+  ilanlar: [],
   portfoyTalepleri: [
     { key: "adSoyad", label: "Ad Soyad" },
     { key: "telefon", label: "Telefon" },
@@ -78,7 +81,7 @@ function formatDate(value: Timestamp | undefined) {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { user, loading } = useAdminUser();
-  const [activeTab, setActiveTab] = useState<TabKey>("portfoyTalepleri");
+  const [activeTab, setActiveTab] = useState<TabKey>("ilanlar");
   const [items, setItems] = useState<Submission[]>([]);
   const [itemsLoading, setItemsLoading] = useState(true);
 
@@ -89,7 +92,7 @@ export default function AdminDashboardPage() {
   }, [loading, user, router]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || activeTab === "ilanlar") return;
     const q = query(collection(db, activeTab), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,
@@ -165,57 +168,61 @@ export default function AdminDashboardPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border border-border-soft overflow-hidden">
-          {itemsLoading ? (
-            <p className="p-8 text-center text-sm text-muted">Yükleniyor...</p>
-          ) : items.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-center gap-3">
-              <Inbox size={28} className="text-muted" />
-              <p className="text-sm text-muted">Bu kategoride henüz kayıt yok.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-cream-dark text-left text-xs font-semibold text-ink-soft uppercase tracking-wide">
-                    <th className="px-4 py-3 whitespace-nowrap">Tarih</th>
-                    {columns.map((col) => (
-                      <th key={col.key} className="px-4 py-3 whitespace-nowrap">
-                        {col.label}
-                      </th>
-                    ))}
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.id} className="border-t border-border-soft align-top">
-                      <td className="px-4 py-3 whitespace-nowrap text-muted">
-                        {formatDate(item.createdAt)}
-                      </td>
+        {activeTab === "ilanlar" ? (
+          <ListingsManager />
+        ) : (
+          <div className="bg-white rounded-2xl border border-border-soft overflow-hidden">
+            {itemsLoading ? (
+              <p className="p-8 text-center text-sm text-muted">Yükleniyor...</p>
+            ) : items.length === 0 ? (
+              <div className="p-12 flex flex-col items-center justify-center text-center gap-3">
+                <Inbox size={28} className="text-muted" />
+                <p className="text-sm text-muted">Bu kategoride henüz kayıt yok.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-cream-dark text-left text-xs font-semibold text-ink-soft uppercase tracking-wide">
+                      <th className="px-4 py-3 whitespace-nowrap">Tarih</th>
                       {columns.map((col) => (
-                        <td key={col.key} className="px-4 py-3 max-w-xs text-ink">
-                          {Array.isArray(item[col.key])
-                            ? item[col.key].join(", ")
-                            : item[col.key] || "-"}
-                        </td>
+                        <th key={col.key} className="px-4 py-3 whitespace-nowrap">
+                          {col.label}
+                        </th>
                       ))}
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="text-muted hover:text-red-600 transition-colors"
-                          aria-label="Sil"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
+                      <th className="px-4 py-3" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                  </thead>
+                  <tbody>
+                    {items.map((item) => (
+                      <tr key={item.id} className="border-t border-border-soft align-top">
+                        <td className="px-4 py-3 whitespace-nowrap text-muted">
+                          {formatDate(item.createdAt)}
+                        </td>
+                        {columns.map((col) => (
+                          <td key={col.key} className="px-4 py-3 max-w-xs text-ink">
+                            {Array.isArray(item[col.key])
+                              ? item[col.key].join(", ")
+                              : item[col.key] || "-"}
+                          </td>
+                        ))}
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-muted hover:text-red-600 transition-colors"
+                            aria-label="Sil"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

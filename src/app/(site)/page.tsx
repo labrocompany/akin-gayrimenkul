@@ -17,12 +17,11 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Button from "@/components/Button";
-import ListingCard from "@/components/ListingCard";
+import FeaturedListings from "@/components/FeaturedListings";
 import OfficeCard from "@/components/OfficeCard";
 import CtaBanner from "@/components/CtaBanner";
 import StatsRow from "@/components/StatsRow";
 import LeadMiniForm from "@/components/forms/LeadMiniForm";
-import { listings } from "@/lib/listings";
 import { offices } from "@/lib/site";
 import { withBasePath } from "@/lib/paths";
 
@@ -170,11 +169,7 @@ export default function HomePage() {
             Tüm Portföyler <ChevronRight size={15} />
           </Link>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {listings.slice(0, 3).map((listing) => (
-            <ListingCard key={listing.slug} listing={listing} />
-          ))}
-        </div>
+        <FeaturedListings />
       </section>
 
       <section className="container-page py-8">

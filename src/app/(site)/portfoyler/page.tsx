@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Grid2x2,
@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import Button from "@/components/Button";
 import ListingCard from "@/components/ListingCard";
-import { listings, type ListingCategory } from "@/lib/listings";
+import { type ListingCategory } from "@/lib/listings";
+import { subscribeListings, type ListingRecord } from "@/lib/listingsService";
 import { istanbulDistricts } from "@/lib/turkey";
 import { withBasePath } from "@/lib/paths";
 
@@ -33,11 +34,21 @@ const tabs: { key: ListingCategory | "tumu"; label: string; icon: typeof Home }[
 
 export default function PortfoylerPage() {
   const [activeTab, setActiveTab] = useState<ListingCategory | "tumu">("tumu");
+  const [listings, setListings] = useState<ListingRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeListings((data) => {
+      setListings(data);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   const filtered = useMemo(() => {
     if (activeTab === "tumu") return listings;
     return listings.filter((listing) => listing.category === activeTab);
-  }, [activeTab]);
+  }, [activeTab, listings]);
 
   return (
     <>
@@ -155,10 +166,16 @@ export default function PortfoylerPage() {
           </select>
         </div>
 
-        {filtered.length > 0 ? (
+        {loading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-[300px] rounded-2xl bg-cream-dark animate-pulse" />
+            ))}
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {filtered.map((listing) => (
-              <ListingCard key={listing.slug} listing={listing} />
+              <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>
         ) : (
