@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    match /portfoyTalepleri/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['adSoyad', 'telefon', 'eposta', 'il', 'ilce', 'gayrimenkulTuru', 'islemTipi'])
+        && request.resource.data.adSoyad is string && request.resource.data.adSoyad.size() > 0 && request.resource.data.adSoyad.size() < 200
+        && request.resource.data.telefon is string && request.resource.data.telefon.size() > 0 && request.resource.data.telefon.size() < 40
+        && request.resource.data.eposta is string && request.resource.data.eposta.size() > 0 && request.resource.data.eposta.size() < 200;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /projeTalepleri/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['firmaAdi', 'yetkiliAdSoyad', 'telefon', 'eposta'])
+        && request.resource.data.firmaAdi is string && request.resource.data.firmaAdi.size() > 0 && request.resource.data.firmaAdi.size() < 200
+        && request.resource.data.yetkiliAdSoyad is string && request.resource.data.yetkiliAdSoyad.size() > 0 && request.resource.data.yetkiliAdSoyad.size() < 200
+        && request.resource.data.telefon is string && request.resource.data.telefon.size() > 0 && request.resource.data.telefon.size() < 40
+        && request.resource.data.eposta is string && request.resource.data.eposta.size() > 0 && request.resource.data.eposta.size() < 200;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /iletisimMesajlari/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['adSoyad', 'telefon', 'eposta'])
+        && request.resource.data.adSoyad is string && request.resource.data.adSoyad.size() > 0 && request.resource.data.adSoyad.size() < 200
+        && request.resource.data.telefon is string && request.resource.data.telefon.size() > 0 && request.resource.data.telefon.size() < 40
+        && request.resource.data.eposta is string && request.resource.data.eposta.size() > 0 && request.resource.data.eposta.size() < 200;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /hizliTalepler/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['telefon', 'gayrimenkulTuru', 'il', 'ilce'])
+        && request.resource.data.telefon is string && request.resource.data.telefon.size() > 0 && request.resource.data.telefon.size() < 40;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
+    NEXT_PUBLIC_FIREBASE_API_KEY: "AIzaSyAVp1I3nJmez1RHra0HKcF4xk_qmaclh0A",
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "akin-gayrimenkul.firebaseapp.com",
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: "akin-gayrimenkul",
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "akin-gayrimenkul.firebasestorage.app",
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "605033894169",
+    NEXT_PUBLIC_FIREBASE_APP_ID: "1:605033894169:web:75b59435cc34ef2831f588",
   },
 };
 

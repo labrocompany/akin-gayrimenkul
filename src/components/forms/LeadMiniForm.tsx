@@ -4,13 +4,38 @@ import { useState, type FormEvent } from "react";
 import { ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
 import { turkishProvinces, istanbulDistricts } from "@/lib/turkey";
+import { createHizliTalep } from "@/lib/submissions";
+
+const initialForm = {
+  gayrimenkulTuru: "",
+  il: "",
+  ilce: "",
+  tahminiFiyat: "",
+  telefon: "",
+};
 
 export default function LeadMiniForm() {
+  const [form, setForm] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function update(field: keyof typeof initialForm, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+    try {
+      await createHizliTalep(form);
+      setSubmitted(true);
+    } catch {
+      setError("Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -38,7 +63,12 @@ export default function LeadMiniForm() {
           <label className="text-xs font-medium text-ink-soft mb-1.5 block">
             Gayrimenkul Türü
           </label>
-          <select required className="form-select">
+          <select
+            required
+            className="form-select"
+            value={form.gayrimenkulTuru}
+            onChange={(e) => update("gayrimenkulTuru", e.target.value)}
+          >
             <option value="">Seçiniz</option>
             <option>Konut</option>
             <option>Ticari</option>
@@ -51,7 +81,12 @@ export default function LeadMiniForm() {
             <label className="text-xs font-medium text-ink-soft mb-1.5 block">
               İl Seçiniz
             </label>
-            <select required className="form-select">
+            <select
+              required
+              className="form-select"
+              value={form.il}
+              onChange={(e) => update("il", e.target.value)}
+            >
               <option value="">Seçiniz</option>
               {turkishProvinces.map((il) => (
                 <option key={il}>{il}</option>
@@ -62,7 +97,12 @@ export default function LeadMiniForm() {
             <label className="text-xs font-medium text-ink-soft mb-1.5 block">
               İlçe Seçiniz
             </label>
-            <select required className="form-select">
+            <select
+              required
+              className="form-select"
+              value={form.ilce}
+              onChange={(e) => update("ilce", e.target.value)}
+            >
               <option value="">Seçiniz</option>
               {istanbulDistricts.map((ilce) => (
                 <option key={ilce}>{ilce}</option>
@@ -78,6 +118,8 @@ export default function LeadMiniForm() {
             type="text"
             placeholder="Örn. 10.000.000 TL"
             className="form-input"
+            value={form.tahminiFiyat}
+            onChange={(e) => update("tahminiFiyat", e.target.value)}
           />
         </div>
         <div>
@@ -91,11 +133,16 @@ export default function LeadMiniForm() {
               type="tel"
               placeholder="05xx xxx xx xx"
               className="flex-1 text-sm outline-none bg-transparent"
+              value={form.telefon}
+              onChange={(e) => update("telefon", e.target.value)}
             />
           </div>
         </div>
-        <Button type="submit" variant="primary" size="lg" className="w-full">
-          Portföyümü Değerlendirin
+
+        {error && <p className="text-xs text-red-600">{error}</p>}
+
+        <Button type="submit" variant="primary" size="lg" className="w-full" disabled={submitting}>
+          {submitting ? "Gönderiliyor..." : "Portföyümü Değerlendirin"}
         </Button>
         <p className="text-[11px] text-muted flex items-start gap-1.5 pt-1">
           <ShieldCheck size={14} className="text-primary-500 shrink-0 mt-0.5" />

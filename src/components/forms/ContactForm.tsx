@@ -3,13 +3,39 @@
 import { useState, type FormEvent } from "react";
 import { MessageSquare, ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
+import { createIletisimMesaji } from "@/lib/submissions";
+
+const initialForm = {
+  adSoyad: "",
+  telefon: "",
+  eposta: "",
+  hizmetTuru: "",
+  konu: "",
+  mesaj: "",
+};
 
 export default function ContactForm() {
+  const [form, setForm] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function update(field: keyof typeof initialForm, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+    try {
+      await createIletisimMesaji(form);
+      setSubmitted(true);
+    } catch {
+      setError("Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -36,18 +62,43 @@ export default function ContactForm() {
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div className="grid sm:grid-cols-2 gap-3.5">
           <Field label="Ad Soyad">
-            <input required type="text" placeholder="Adınızı giriniz" className="form-input" />
+            <input
+              required
+              type="text"
+              placeholder="Adınızı giriniz"
+              className="form-input"
+              value={form.adSoyad}
+              onChange={(e) => update("adSoyad", e.target.value)}
+            />
           </Field>
           <Field label="Telefon">
-            <input required type="tel" placeholder="5XX XXX XX XX" className="form-input" />
+            <input
+              required
+              type="tel"
+              placeholder="5XX XXX XX XX"
+              className="form-input"
+              value={form.telefon}
+              onChange={(e) => update("telefon", e.target.value)}
+            />
           </Field>
         </div>
         <div className="grid sm:grid-cols-2 gap-3.5">
           <Field label="E-posta">
-            <input required type="email" placeholder="ornek@email.com" className="form-input" />
+            <input
+              required
+              type="email"
+              placeholder="ornek@email.com"
+              className="form-input"
+              value={form.eposta}
+              onChange={(e) => update("eposta", e.target.value)}
+            />
           </Field>
           <Field label="Hizmet Türü">
-            <select className="form-select">
+            <select
+              className="form-select"
+              value={form.hizmetTuru}
+              onChange={(e) => update("hizmetTuru", e.target.value)}
+            >
               <option value="">Seçiniz</option>
               <option>Portföy Satışı</option>
               <option>Gayrimenkul Arayışı</option>
@@ -57,13 +108,28 @@ export default function ContactForm() {
           </Field>
         </div>
         <Field label="Konu">
-          <input type="text" placeholder="Konu başlığını giriniz" className="form-input" />
+          <input
+            type="text"
+            placeholder="Konu başlığını giriniz"
+            className="form-input"
+            value={form.konu}
+            onChange={(e) => update("konu", e.target.value)}
+          />
         </Field>
         <Field label="Mesajınız">
-          <textarea rows={4} placeholder="Mesajınızı buraya yazınız." className="form-textarea" />
+          <textarea
+            rows={4}
+            placeholder="Mesajınızı buraya yazınız."
+            className="form-textarea"
+            value={form.mesaj}
+            onChange={(e) => update("mesaj", e.target.value)}
+          />
         </Field>
-        <Button type="submit" variant="primary" size="lg" className="w-full" withArrow>
-          Mesaj Gönder
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        <Button type="submit" variant="primary" size="lg" className="w-full" withArrow disabled={submitting}>
+          {submitting ? "Gönderiliyor..." : "Mesaj Gönder"}
         </Button>
       </form>
     </div>

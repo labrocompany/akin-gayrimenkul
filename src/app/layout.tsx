@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -16,13 +15,11 @@ export const metadata: Metadata = {
     "Bireysel portföy satışından büyük ölçekli projelerin satış yönetimine kadar tüm süreci profesyonel ekibimizle birlikte yönetiyoruz.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="tr" className={`${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-cream text-ink">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );
