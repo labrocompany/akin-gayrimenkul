@@ -144,7 +144,7 @@ export default function ContactPage() {
         <div className="rounded-2xl overflow-hidden border border-border-soft h-[320px]">
           <iframe
             title="Akın Emlak konum haritası"
-            src="https://www.google.com/maps?q=Ata%C5%9Fehir,%20%C4%B0stanbul&output=embed"
+            src="https://www.google.com/maps?q=Halkal%C4%B1%20%C4%B0stasyon%2C%20K%C3%BC%C3%A7%C3%BCk%C3%A7ekmece%2C%20%C4%B0stanbul&output=embed"
             className="w-full h-full"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
