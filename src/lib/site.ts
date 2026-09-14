@@ -4,15 +4,13 @@ export const siteConfig = {
   phoneHref: "tel:+905433448610",
   whatsapp: "0543 344 86 10",
   whatsappHref: "https://wa.me/905433448610",
-  email: "yayhusamettinvehbi@gmail.com",
+  email: "info@akinemlakyatirim.com.tr",
   address:
     "Halkalı İstasyon Mah. 1421 Sk. No:62 A Blok Dükkan 6, 34303 Küçükçekmece / İstanbul",
   workingHours:
     "Hafta içi 09:00-19:00, Cumartesi 09:30-17:00, Pazar 10:00-17:00 (Dini bayramlarda kapalıyız)",
   social: {
-    instagram: "https://instagram.com",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
+    instagram: "https://www.instagram.com/akinemlakvegayrimenkul/",
   },
 };
 

@@ -2,22 +2,18 @@ import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import Logo from "./Logo";
 import { siteConfig } from "@/lib/site";
-import { InstagramIcon, FacebookIcon, LinkedinIcon } from "./SocialIcons";
+import { InstagramIcon } from "./SocialIcons";
 
 const hizmetler = [
   { label: "Portföy Alımı", href: "/portfoyler" },
   { label: "Portföy Satımı", href: "/portfoyunuzu-satalim" },
   { label: "Proje Satış & Danışmanlık", href: "/proje-satis-danismanlik" },
-  { label: "Yetkili Satış Ofisi Danışmanlığı", href: "/proje-satis-danismanlik" },
   { label: "Gayrimenkul Değerleme", href: "/portfoyunuzu-satalim" },
 ];
 
 const kurumsal = [
-  { label: "Hakkımızda", href: "/iletisim" },
-  { label: "Ekibimiz", href: "/iletisim" },
-  { label: "Referanslarımız", href: "/portfoyler" },
-  { label: "Kariyer", href: "/iletisim" },
-  { label: "Blog", href: "/" },
+  { label: "Hakkımızda", href: "/hakkimizda" },
+  { label: "Ekibimiz", href: "/ekibimiz" },
 ];
 
 const portfoyler = [
@@ -68,12 +64,6 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <SocialIcon href={siteConfig.social.instagram}>
                 <InstagramIcon size={16} />
-              </SocialIcon>
-              <SocialIcon href={siteConfig.social.facebook}>
-                <FacebookIcon size={16} />
-              </SocialIcon>
-              <SocialIcon href={siteConfig.social.linkedin}>
-                <LinkedinIcon size={16} />
               </SocialIcon>
             </div>
           </div>

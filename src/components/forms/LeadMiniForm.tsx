@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
-import { turkishProvinces, istanbulDistricts } from "@/lib/turkey";
+import { turkishProvinces, getDistrictsForProvince } from "@/lib/turkey";
 import { createHizliTalep } from "@/lib/submissions";
 
 const initialForm = {
@@ -23,6 +23,12 @@ export default function LeadMiniForm() {
   function update(field: keyof typeof initialForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
+
+  function updateIl(il: string) {
+    setForm((prev) => ({ ...prev, il, ilce: "" }));
+  }
+
+  const districtOptions = getDistrictsForProvince(form.il);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -85,7 +91,7 @@ export default function LeadMiniForm() {
               required
               className="form-select"
               value={form.il}
-              onChange={(e) => update("il", e.target.value)}
+              onChange={(e) => updateIl(e.target.value)}
             >
               <option value="">Seçiniz</option>
               {turkishProvinces.map((il) => (
@@ -102,9 +108,10 @@ export default function LeadMiniForm() {
               className="form-select"
               value={form.ilce}
               onChange={(e) => update("ilce", e.target.value)}
+              disabled={!form.il}
             >
               <option value="">Seçiniz</option>
-              {istanbulDistricts.map((ilce) => (
+              {districtOptions.map((ilce) => (
                 <option key={ilce}>{ilce}</option>
               ))}
             </select>

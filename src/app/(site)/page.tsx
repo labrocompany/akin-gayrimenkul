@@ -15,6 +15,7 @@ import {
   BarChart3,
   MessageSquare,
   ChevronRight,
+  BadgeCheck,
 } from "lucide-react";
 import Button from "@/components/Button";
 import FeaturedListings from "@/components/FeaturedListings";
@@ -82,12 +83,52 @@ const whyUs = [
   { icon: Clock3, title: "Zaman Yönetimi", description: "Süreci sizin adınıza biz yönetiriz" },
 ];
 
+const trustCards = [
+  {
+    icon: BadgeCheck,
+    title: "Kurumsal Güvence",
+    description:
+      "Sahibinden.com'da PREMİUM OFİS, Hepsiemlak'ta ELİT OFİS unvanlarıyla sektörde üst segmentte hizmet veriyoruz.",
+    linkLabel: "Hakkımızda",
+    href: "/hakkimizda",
+    iconBg: "bg-primary-500/10 text-primary-600",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Şeffaf ve Güvenilir Süreç",
+    description:
+      "Portföy ve proje satış süreçlerinde her adımı şeffaf şekilde sizinle paylaşır, güven üzerine kurulu bir ilişki yürütürüz.",
+    linkLabel: "Ekibimizle Tanışın",
+    href: "/ekibimiz",
+    iconBg: "bg-secondary-500/10 text-secondary-600",
+  },
+  {
+    icon: Handshake,
+    title: "Kurumsal Danışmanlık",
+    description:
+      "Bireysel portföyden büyük ölçekli proje satış yönetimine kadar kurumsal kimliğimizle güvenilir bir danışmanlık sunuyoruz.",
+    linkLabel: "Bizimle İletişime Geçin",
+    href: "/iletisim",
+    iconBg: "bg-blue-500/10 text-blue-700",
+  },
+];
+
 export default function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
         <div className="container-page grid lg:grid-cols-2 gap-10 items-center py-10 lg:py-14">
           <div className="relative z-10">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-500/10 text-primary-700 text-xs font-semibold px-3 py-1.5">
+                <BadgeCheck size={14} />
+                sahibinden.com&apos;da PREMİUM OFİS
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary-500/10 text-secondary-700 text-xs font-semibold px-3 py-1.5">
+                <BadgeCheck size={14} />
+                Hepsiemlak&apos;ta ELİT OFİS
+              </span>
+            </div>
             <h1 className="font-extrabold tracking-tight text-4xl sm:text-[42px] leading-[1.15] text-ink">
               Gayrimenkulde
               <br />
@@ -281,6 +322,45 @@ export default function HomePage() {
               image={office.image}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="container-page py-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-ink text-center mb-2">
+          Güven ve Kurumsallık
+        </h2>
+        <p className="text-muted text-sm text-center max-w-lg mx-auto mb-6">
+          15 yılı aşan tecrübemiz ve kurumsal kimliğimizle gayrimenkul
+          süreçlerinizde güvenle yanınızdayız.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-5">
+          {trustCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.title}
+                className="bg-white rounded-2xl border border-border-soft p-6 flex flex-col"
+              >
+                <div
+                  className={`w-11 h-11 rounded-full flex items-center justify-center mb-4 ${card.iconBg}`}
+                >
+                  <Icon size={20} />
+                </div>
+                <h3 className="font-semibold text-ink text-[15px] leading-snug">
+                  {card.title}
+                </h3>
+                <p className="text-[13px] text-muted mt-2 leading-relaxed flex-1">
+                  {card.description}
+                </p>
+                <Link
+                  href={card.href}
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 mt-4 hover:gap-1.5 transition-all"
+                >
+                  {card.linkLabel} <ChevronRight size={15} />
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </section>
 

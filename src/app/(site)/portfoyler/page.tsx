@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Grid2x2,
@@ -32,10 +33,51 @@ const tabs: { key: ListingCategory | "tumu"; label: string; icon: typeof Home }[
   { key: "yatirim", label: "Yatırım Fırsatları", icon: TrendingUp },
 ];
 
-export default function PortfoylerPage() {
-  const [activeTab, setActiveTab] = useState<ListingCategory | "tumu">("tumu");
+const validTabKeys = tabs.map((tab) => tab.key);
+
+function isValidTabKey(value: string | null): value is ListingCategory | "tumu" {
+  return !!value && (validTabKeys as string[]).includes(value);
+}
+
+const sortOptions = [
+  { key: "onerilen", label: "Önerilen Sıralama" },
+  { key: "fiyat-artan", label: "Fiyat: Düşükten Yükseğe" },
+  { key: "fiyat-azalan", label: "Fiyat: Yüksekten Düşüğe" },
+  { key: "en-yeni", label: "En Yeniler" },
+] as const;
+
+type SortKey = (typeof sortOptions)[number]["key"];
+
+const PAGE_SIZE = 8;
+
+function parsePrice(price: string): number {
+  const digits = price.replace(/[^0-9]/g, "");
+  return digits ? Number(digits) : 0;
+}
+
+function PortfoylerContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("kategori");
+
+  const [activeTab, setActiveTab] = useState<ListingCategory | "tumu">(
+    isValidTabKey(categoryParam) ? categoryParam : "tumu"
+  );
   const [listings, setListings] = useState<ListingRecord[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isValidTabKey(categoryParam)) {
+      setActiveTab(categoryParam);
+    }
+  }, [categoryParam]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("onerilen");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const unsubscribe = subscribeListings((data) => {
@@ -45,10 +87,60 @@ export default function PortfoylerPage() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab, searchTerm, statusFilter, districtFilter, minPrice, maxPrice, sortKey]);
+
   const filtered = useMemo(() => {
-    if (activeTab === "tumu") return listings;
-    return listings.filter((listing) => listing.category === activeTab);
-  }, [activeTab, listings]);
+    let result = listings;
+
+    if (activeTab !== "tumu") {
+      result = result.filter((listing) => listing.category === activeTab);
+    }
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLocaleLowerCase("tr-TR");
+      result = result.filter((listing) =>
+        [listing.title, listing.district, listing.city].some((field) =>
+          field?.toLocaleLowerCase("tr-TR").includes(term)
+        )
+      );
+    }
+
+    if (statusFilter) {
+      result = result.filter((listing) => listing.status === statusFilter);
+    }
+
+    if (districtFilter) {
+      result = result.filter((listing) => listing.district === districtFilter);
+    }
+
+    const min = minPrice ? Number(minPrice) : undefined;
+    const max = maxPrice ? Number(maxPrice) : undefined;
+    if (min !== undefined || max !== undefined) {
+      result = result.filter((listing) => {
+        const value = parsePrice(listing.price);
+        if (min !== undefined && value < min) return false;
+        if (max !== undefined && value > max) return false;
+        return true;
+      });
+    }
+
+    if (sortKey === "fiyat-artan") {
+      result = [...result].sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+    } else if (sortKey === "fiyat-azalan") {
+      result = [...result].sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+    }
+
+    return result;
+  }, [activeTab, listings, searchTerm, statusFilter, districtFilter, minPrice, maxPrice, sortKey]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = useMemo(
+    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage]
+  );
 
   return (
     <>
@@ -80,25 +172,24 @@ export default function PortfoylerPage() {
 
       <section className="container-page">
         <div className="bg-white rounded-2xl border border-border-soft p-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-4 -mt-2">
-          <FilterField label="Gayrimenkul Türü">
-            <select className="form-select">
-              <option>Seçiniz</option>
-              <option>Konut</option>
-              <option>Ticari</option>
-              <option>Arsa</option>
-              <option>Proje</option>
-            </select>
-          </FilterField>
           <FilterField label="İşlem Tipi">
-            <select className="form-select">
-              <option>Seçiniz</option>
-              <option>Satılık</option>
-              <option>Kiralık</option>
+            <select
+              className="form-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Seçiniz</option>
+              <option value="SATILIK">Satılık</option>
+              <option value="KİRALIK">Kiralık</option>
             </select>
           </FilterField>
           <FilterField label="İlçe / Bölge">
-            <select className="form-select">
-              <option>Seçiniz</option>
+            <select
+              className="form-select"
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+            >
+              <option value="">Seçiniz</option>
               {istanbulDistricts.map((ilce) => (
                 <option key={ilce}>{ilce}</option>
               ))}
@@ -106,22 +197,32 @@ export default function PortfoylerPage() {
           </FilterField>
           <FilterField label="Fiyat Aralığı">
             <div className="flex items-center gap-1.5">
-              <input placeholder="Min" className="form-input" />
+              <input
+                placeholder="Min"
+                className="form-input"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
               <span className="text-muted text-sm">-</span>
-              <input placeholder="Maks" className="form-input" />
+              <input
+                placeholder="Maks"
+                className="form-input"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
               <span className="text-xs text-muted shrink-0">TL</span>
             </div>
           </FilterField>
-          <FilterField label="Oda Sayısı">
+          <FilterField label="Ara">
             <div className="flex items-center gap-2">
-              <select className="form-select">
-                <option>Seçiniz</option>
-                <option>1+1</option>
-                <option>2+1</option>
-                <option>3+1</option>
-                <option>4+1</option>
-              </select>
-              <Button variant="primary" size="md" className="shrink-0 !px-4">
+              <input
+                type="text"
+                placeholder="Başlık, ilçe veya şehir ara"
+                className="form-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Button variant="primary" size="md" className="shrink-0 !px-4" type="button">
                 <Search size={16} />
                 Ara
               </Button>
@@ -158,11 +259,16 @@ export default function PortfoylerPage() {
             <span className="font-semibold text-ink">{filtered.length}</span>{" "}
             Portföy Bulundu
           </p>
-          <select className="form-select w-auto text-sm">
-            <option>Önerilen Sıralama</option>
-            <option>Fiyat: Düşükten Yükseğe</option>
-            <option>Fiyat: Yüksekten Düşüğe</option>
-            <option>En Yeniler</option>
+          <select
+            className="form-select w-auto text-sm"
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+          >
+            {sortOptions.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -172,15 +278,15 @@ export default function PortfoylerPage() {
               <div key={i} className="h-[300px] rounded-2xl bg-cream-dark animate-pulse" />
             ))}
           </div>
-        ) : filtered.length > 0 ? (
+        ) : paginated.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filtered.map((listing) => (
+            {paginated.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>
         ) : (
           <p className="text-center text-muted py-16">
-            Bu kategoride henüz portföy bulunmuyor.
+            Bu kriterlere uygun portföy bulunmuyor.
           </p>
         )}
       </section>
@@ -235,19 +341,43 @@ export default function PortfoylerPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <PageButton aria-label="Önceki sayfa">
-            <ChevronLeft size={16} />
-          </PageButton>
-          <PageButton active>1</PageButton>
-          <PageButton disabled>2</PageButton>
-          <PageButton disabled>3</PageButton>
-          <PageButton aria-label="Sonraki sayfa" disabled>
-            <ChevronRight size={16} />
-          </PageButton>
-        </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <PageButton
+              aria-label="Önceki sayfa"
+              disabled={currentPage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              <ChevronLeft size={16} />
+            </PageButton>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <PageButton
+                key={num}
+                active={currentPage === num}
+                onClick={() => setPage(num)}
+              >
+                {num}
+              </PageButton>
+            ))}
+            <PageButton
+              aria-label="Sonraki sayfa"
+              disabled={currentPage === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              <ChevronRight size={16} />
+            </PageButton>
+          </div>
+        )}
       </section>
     </>
+  );
+}
+
+export default function PortfoylerPage() {
+  return (
+    <Suspense fallback={null}>
+      <PortfoylerContent />
+    </Suspense>
   );
 }
 
@@ -270,11 +400,13 @@ function PageButton({
   children,
   active,
   disabled,
+  onClick,
   "aria-label": ariaLabel,
 }: {
   children: React.ReactNode;
   active?: boolean;
   disabled?: boolean;
+  onClick?: () => void;
   "aria-label"?: string;
 }) {
   return (
@@ -282,6 +414,7 @@ function PageButton({
       type="button"
       aria-label={ariaLabel}
       disabled={disabled}
+      onClick={onClick}
       className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium border transition-colors ${
         active
           ? "bg-primary-500 border-primary-500 text-white"

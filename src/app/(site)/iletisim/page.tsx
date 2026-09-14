@@ -4,6 +4,7 @@ import Button from "@/components/Button";
 import OfficeCard from "@/components/OfficeCard";
 import CtaBanner from "@/components/CtaBanner";
 import ContactForm from "@/components/forms/ContactForm";
+import { InstagramIcon } from "@/components/SocialIcons";
 import { siteConfig, contactOffices } from "@/lib/site";
 import { withBasePath } from "@/lib/paths";
 
@@ -31,6 +32,12 @@ const quickContacts = [
     title: "Ofis Ziyareti",
     value: siteConfig.address,
     href: "#ofislerimiz",
+  },
+  {
+    icon: InstagramIcon,
+    title: "Instagram",
+    value: "@akinemlakvegayrimenkul",
+    href: siteConfig.social.instagram,
   },
 ];
 
@@ -76,13 +83,15 @@ export default function ContactPage() {
       </section>
 
       <section className="container-page py-8">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {quickContacts.map((item) => {
             const Icon = item.icon;
             return (
               <a
                 key={item.title}
                 href={item.href}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="bg-white rounded-2xl border border-border-soft p-4 flex items-center gap-3 hover:border-primary-500 transition-colors"
               >
                 <div className="w-10 h-10 rounded-full bg-primary-500/10 text-primary-600 flex items-center justify-center shrink-0">

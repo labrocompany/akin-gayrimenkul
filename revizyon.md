@@ -1,0 +1,29 @@
+- [x] Siyah olan logo eklenecek
+- [x] Ofis 1 : Merkez Ofis : Akın Emlak Gayrimenkul Divan Residence Halkalı İstasyon Mahallesi 1421 Sokak No 62 A Blok Dükkan 6 Küçükçekmece/İstanbul
+- [x] Ofis 2 : Akın Emlak Gayrimenkul İnnovia2 Sitesi Yeşilkent Mahallesi Nazım Hikmet Bulvarı, 1953. Sk. 48C, Yönetim Binası Zemin Kat Posta Kodu : 34515 Esenyurt/İstanbul
+- [x] Ofis 3 : Akın Emlak Gayrimenkul, İstasyon, Yarımburgaz Cd. No:31, Posta Kodu : 34303 Küçükçekmece/İstanbul
+- [x] Mail Adres : [yayhusamettinvehbi@gmail.com](mailto:yayhusamettinvehbi@gmail.com) ([info@akinemlakyatirim.com.tr](mailto:info@akinemlakyatirim.com.tr) olarak güncellendi, aşağıdaki madde)
+- [x] Ana Telefonumuz : 0543 344 86 10
+- [x] Telefon no 2 : 0505 240 90 60
+- [x] Telefon 3 : 0545 572 75 60
+- [x] whatshap benim numarama bağlansın (Vehbi Bey) 0543 344 86 10
+- [x] Çalışma Haftanın her günü / Hafta içi 09.00-19.00 / Cumartesi 09.30-17.00 / Pazar 10.00-17.00 / Dini Bayramlarda kapalıyız.
+- [x] Divan Residence ye Posta Kodu ekleyelim adrese : 34303
+- [x] [info@akinemlak.com.tr](mailto:info@akinemlak.com.tr) mail adresi eklensin (sonraki notla [info@akinemlakyatirim.com.tr](mailto:info@akinemlakyatirim.com.tr) olarak güncellendi, aşağıdaki madde)
+- [x] Sahibinden com da PREMİUM OFİS, Hepsi Emlakta ELİT OFİS ünvanları bu sayfada vurgulanmalı (ana sayfa hero bölümüne rozet olarak eklendi, src/app/(site)/page.tsx)
+- [x] Güven ile ilgili kurumsallık ile ilgili ana girişte bir yönlendirme olmalı (ana sayfa en altta "Güven ve Kurumsallık" bölümü eklendi: Kurumsal Güvence, Şeffaf ve Güvenilir Süreç, Kurumsal Danışmanlık kartları - src/app/(site)/page.tsx)
+- [x] "Gayrimenkulde Doğru Strateji, Doğru Alıcı, Doğru Sonuç." yazılı alan eklensin (ana sayfa hero başlığında mevcut, src/app/(site)/page.tsx)
+- [x] Bireysel portföy satışından büyük ölçekli projelerin satış yönetimine kadar tüm süreci profesyonel ekibimizle birlikte yönetiyoruz metni eklensin (ana sayfa hero açıklamasında mevcut, src/app/(site)/page.tsx) - hizmet detayları (Şantiyeden itibaren satış ofisi, teslim, site yönetimi vb.) henüz eklenmedi
+- [ ] Yazı büyüklükleri ve birinin bitip diğerinin başlaması simetrik olsun, metin kısımları sağa sola yaslanır şekilde düzenlensin
+- [x] İletişim içine instagram adresi eklensin (@akinemlakvegayrimenkul, iletisim sayfası ve Footer)
+- [x] Mail adresi [info@akinemlakyatirim.com.tr](mailto:info@akinemlakyatirim.com.tr) olarak güncellensin (src/lib/site.ts)
+- [x] Sayfanın altındaki hakkımızda, ekibimiz, kariyer sayfaları iletişime gidiyor - düzeltildi (/hakkimizda, /ekibimiz, /kariyer sayfaları oluşturuldu ve Footer'dan yönlendirildi)
+- [x] Blog menüsü ana sayfaya gidiyor - düzeltildi (Blog içeriği/altyapısı olmadığından Footer'dan kaldırıldı, yanıltıcı link bırakılmadı)
+- [x] Portföyler aynı sayfada aynı görselleri gösteriyor - düzeltilmeli
+- [x] Hizmetlerimizdeki başlıklar aynı sayfalara gidiyor, ayrı sayfalar olmalı
+- [x] İletişim altındaki sosyal medya simgeleri bizimkilere gitmiyor - Instagram gerçek linke bağlandı, Facebook ve LinkedIn kaldırıldı (Footer.tsx, site.ts)
+- [x] Portföyler sayfasında altta 1-2-3 pasif ilanlara tıklanmıyor - düzeltildi (sayfalama artık sonuç sayısına göre dinamik ve tıklanabilir, portfoyler/page.tsx)
+- [x] Emlak sıralaması çalışmıyor - düzeltildi (fiyata göre artan/azalan sıralama çalışıyor, portfoyler/page.tsx)
+- [x] Arama çalışmıyor - düzeltildi (başlık/ilçe/şehir üzerinden anlık arama eklendi, portfoyler/page.tsx)
+- [x] Portföyünüzü satalım sayfasında iller geliyor, ilçeler gelmiyor - düzeltildi (81 il için il-ilçe verisi eklendi, seçilen ile göre ilçe listesi dinamik güncelleniyor, SellPortfolioForm.tsx)
+- [x] Ana sayfadaki "portföy bilgilerinizi bırakın" formunda il seçiyoruz ilçeler değişmiyor - düzeltildi (aynı il-ilçe verisiyle dinamik hale getirildi, LeadMiniForm.tsx)

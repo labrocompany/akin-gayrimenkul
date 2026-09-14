@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Home, UploadCloud, ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
-import { turkishProvinces } from "@/lib/turkey";
+import { turkishProvinces, getDistrictsForProvince } from "@/lib/turkey";
 import { createPortfoyTalebi } from "@/lib/submissions";
 
 const initialForm = {
@@ -32,6 +32,12 @@ export default function SellPortfolioForm() {
   function update(field: keyof typeof initialForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
+
+  function updateIl(il: string) {
+    setForm((prev) => ({ ...prev, il, ilce: "" }));
+  }
+
+  const districtOptions = getDistrictsForProvince(form.il);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -107,7 +113,7 @@ export default function SellPortfolioForm() {
               required
               className="form-select"
               value={form.il}
-              onChange={(e) => update("il", e.target.value)}
+              onChange={(e) => updateIl(e.target.value)}
             >
               <option value="">Seçiniz</option>
               {turkishProvinces.map((il) => (
@@ -116,14 +122,18 @@ export default function SellPortfolioForm() {
             </select>
           </Field>
           <Field label="İlçe">
-            <input
+            <select
               required
-              type="text"
-              placeholder="İlçe giriniz"
-              className="form-input"
+              className="form-select"
               value={form.ilce}
               onChange={(e) => update("ilce", e.target.value)}
-            />
+              disabled={!form.il}
+            >
+              <option value="">Seçiniz</option>
+              {districtOptions.map((ilce) => (
+                <option key={ilce}>{ilce}</option>
+              ))}
+            </select>
           </Field>
         </div>
 
