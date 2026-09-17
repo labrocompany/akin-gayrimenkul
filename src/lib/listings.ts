@@ -11,6 +11,7 @@ export interface Listing {
   price: string;
   image: string;
   features: string[];
+  link: string;
 }
 
 export const categoryLabels: Record<ListingCategory, string> = {

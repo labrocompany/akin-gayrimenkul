@@ -11,6 +11,7 @@ export const siteConfig = {
     "Hafta içi 09:00-19:00, Cumartesi 09:30-17:00, Pazar 10:00-17:00 (Dini bayramlarda kapalıyız)",
   social: {
     instagram: "https://www.instagram.com/akinemlakvegayrimenkul/",
+    facebook: "https://www.facebook.com/profile.php?id=61588735452215",
   },
 };
 

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react";
 import { Home, UploadCloud, ShieldCheck } from "lucide-react";
 import Button from "@/components/Button";
 import { turkishProvinces, getDistrictsForProvince } from "@/lib/turkey";
-import { createPortfoyTalebi } from "@/lib/submissions";
+import { createPortfoyTalebi, uploadPortfoyPhoto } from "@/lib/submissions";
+
+const MAX_PHOTOS = 10;
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 
 const initialForm = {
   gayrimenkulTuru: "",
@@ -24,10 +27,13 @@ const initialForm = {
 
 export default function SellPortfolioForm() {
   const [form, setForm] = useState(initialForm);
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [dragOver, setDragOver] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function update(field: keyof typeof initialForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -44,18 +50,48 @@ export default function SellPortfolioForm() {
     setSubmitting(true);
     setError("");
     try {
-      await createPortfoyTalebi({ ...form, dosyaAdlari: fileNames });
+      const fotoUrl = await Promise.all(files.map((file) => uploadPortfoyPhoto(file)));
+      await createPortfoyTalebi({
+        ...form,
+        dosyaAdlari: files.map((file) => file.name),
+        fotoUrl,
+      });
       setSubmitted(true);
     } catch {
-      setError("Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+      setError("Gönderim sırasında bir hata oluştu. Fotoğrafı tekrar seçip deneyin.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+  function applyFiles(incoming: File[]) {
+    const images = incoming.filter(
+      (file) => file.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name)
+    );
+    if (images.length === 0) {
+      setError("Lütfen JPG veya PNG formatında bir fotoğraf seçin.");
+      return;
+    }
+    const selected = [...files, ...images].slice(0, MAX_PHOTOS);
+    if (selected.some((file) => file.size > MAX_PHOTO_SIZE)) {
+      setError("Her fotoğraf en fazla 5 MB olabilir.");
+      return;
+    }
+    setError("");
+    setFiles(selected);
+    setPreviews(selected.map((file) => URL.createObjectURL(file)));
+  }
+
+  function handleFiles(e: ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return;
-    setFileNames(Array.from(e.target.files).map((file) => file.name));
+    applyFiles(Array.from(e.target.files));
+    e.target.value = "";
+  }
+
+  function handleDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    applyFiles(Array.from(e.dataTransfer.files));
   }
 
   if (submitted) {
@@ -237,16 +273,55 @@ export default function SellPortfolioForm() {
         </Field>
 
         <div>
-          <label className="form-label">Fotoğraf Yükle</label>
-          <label className="flex flex-col items-center justify-center gap-2 border border-dashed border-border-soft rounded-xl py-6 cursor-pointer hover:border-primary-500 transition-colors text-center">
+          <span className="form-label">Fotoğraf Yükle</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="sr-only"
+            onChange={handleFiles}
+          />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+            onDragEnter={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-6 cursor-pointer text-center transition-colors ${
+              dragOver ? "border-primary-500 bg-primary-50" : "border-border-soft hover:border-primary-500"
+            }`}
+          >
             <UploadCloud size={22} className="text-primary-500" />
             <span className="text-xs text-muted px-4">
-              {fileNames.length > 0
-                ? fileNames.join(", ")
+              {files.length > 0
+                ? `${files.length} fotoğraf seçildi`
                 : "Fotoğrafları buraya sürükleyin veya tıklayarak yükleyin. JPG, PNG (Maks. 10 adet)"}
             </span>
-            <input type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} />
-          </label>
+          </div>
+          {previews.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {previews.map((src, index) => (
+                <div key={`${files[index]?.name}-${index}`} className="relative w-16 h-12 rounded-md overflow-hidden bg-cream-dark">
+                  <img src={src} alt={files[index]?.name ?? "Fotoğraf"} className="absolute inset-0 w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}

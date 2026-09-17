@@ -1,11 +1,19 @@
 import Image from "next/image";
-import { BedDouble, Ruler, Car, MapPin } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { Listing } from "@/lib/listings";
 import { withBasePath } from "@/lib/paths";
 
-const featureIcons = [Ruler, BedDouble, Car, MapPin];
+function isHttpUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 export default function ListingCard({ listing }: { listing: Listing }) {
+  const detailLink = listing.link && isHttpUrl(listing.link) ? listing.link : "";
   return (
     <div className="group bg-white rounded-2xl border border-border-soft overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-shadow">
       <div className="relative h-[170px] w-full">
@@ -32,21 +40,26 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         </p>
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-[11.5px] text-muted">
-          {listing.features.map((feature, i) => {
-            const Icon = featureIcons[i % featureIcons.length];
-            return (
-              <span key={feature} className="flex items-center gap-1">
-                <Icon size={13} className="text-primary-500" />
-                {feature}
-              </span>
-            );
-          })}
+          {listing.features.map((feature) => (
+            <span key={feature}>{feature}</span>
+          ))}
         </div>
 
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border-soft">
+        <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-border-soft">
           <span className="font-bold text-ink text-[15px]">
             {listing.price}
           </span>
+          {detailLink ? (
+            <a
+              href={detailLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-0.5 text-sm font-semibold text-primary-600 hover:text-primary-700 shrink-0"
+            >
+              Devamı
+              <ChevronRight size={15} />
+            </a>
+          ) : null}
         </div>
       </div>
     </div>

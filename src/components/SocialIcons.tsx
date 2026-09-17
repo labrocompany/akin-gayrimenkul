@@ -10,13 +10,8 @@ export function InstagramIcon({ size = 16 }: { size?: number }) {
 
 export function FacebookIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path
-        d="M14.5 8.5H16.5V5.5H14.5C12.3 5.5 10.5 7.3 10.5 9.5V11.5H8.5V14.5H10.5V21H13.5V14.5H15.7L16.5 11.5H13.5V9.5C13.5 8.9 13.9 8.5 14.5 8.5Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9V12h2.54V9.8c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
     </svg>
   );
 }

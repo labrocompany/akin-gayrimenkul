@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
@@ -25,6 +26,7 @@ export type ListingInput = {
   price: string;
   image: string;
   features: string[];
+  link: string;
 };
 
 function toListingRecord(docSnap: QueryDocumentSnapshot<DocumentData>): ListingRecord {
@@ -40,6 +42,7 @@ function toListingRecord(docSnap: QueryDocumentSnapshot<DocumentData>): ListingR
     price: data.price,
     image: data.image,
     features: Array.isArray(data.features) ? data.features : [],
+    link: typeof data.link === "string" ? data.link : "",
   };
 }
 
@@ -54,6 +57,13 @@ export async function createListing(data: ListingInput) {
   await addDoc(collection(db, "ilanlar"), {
     ...data,
     createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateListing(id: string, data: ListingInput) {
+  await updateDoc(doc(db, "ilanlar", id), {
+    ...data,
+    updatedAt: serverTimestamp(),
   });
 }
 

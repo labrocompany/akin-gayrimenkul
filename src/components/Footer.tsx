@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import Logo from "./Logo";
 import { siteConfig } from "@/lib/site";
-import { InstagramIcon } from "./SocialIcons";
+import { InstagramIcon, FacebookIcon } from "./SocialIcons";
 
 const hizmetler = [
   { label: "Portföy Alımı", href: "/portfoyler" },
@@ -65,6 +65,9 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <SocialIcon href={siteConfig.social.instagram}>
                 <InstagramIcon size={16} />
+              </SocialIcon>
+              <SocialIcon href={siteConfig.social.facebook}>
+                <FacebookIcon size={16} />
               </SocialIcon>
             </div>
           </div>

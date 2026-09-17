@@ -1,5 +1,6 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
 
 export type PortfoyTalebi = {
   gayrimenkulTuru: string;
@@ -16,6 +17,7 @@ export type PortfoyTalebi = {
   eposta: string;
   aciklama: string;
   dosyaAdlari: string[];
+  fotoUrl: string[];
 };
 
 export type ProjeTalebi = {
@@ -46,6 +48,15 @@ export type HizliTalep = {
   tahminiFiyat: string;
   telefon: string;
 };
+
+export async function uploadPortfoyPhoto(file: File) {
+  const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+  const path = `portfoyTalepleri/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+  const storageRef = ref(storage, path);
+  const contentType = file.type.startsWith("image/") ? file.type : "image/jpeg";
+  await uploadBytes(storageRef, file, { contentType });
+  return getDownloadURL(storageRef);
+}
 
 export async function createPortfoyTalebi(data: PortfoyTalebi) {
   await addDoc(collection(db, "portfoyTalepleri"), {

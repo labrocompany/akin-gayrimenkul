@@ -2,11 +2,12 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
-import { Plus, Trash2, Inbox, ImagePlus } from "lucide-react";
+import { Plus, Trash2, Inbox, ImagePlus, Pencil } from "lucide-react";
 import {
   createListing,
   deleteListing,
   subscribeListings,
+  updateListing,
   uploadListingImage,
   type ListingRecord,
 } from "@/lib/listingsService";
@@ -23,7 +24,21 @@ const initialForm = {
   category: "konut" as ListingCategory,
   price: "",
   featuresText: "",
+  link: "",
 };
+
+function normalizeLink(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const url = new URL(withProtocol);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
 
 export default function ListingsManager() {
   const [listings, setListings] = useState<ListingRecord[]>([]);
@@ -31,6 +46,8 @@ export default function ListingsManager() {
   const [form, setForm] = useState(initialForm);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [existingImage, setExistingImage] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -47,11 +64,21 @@ export default function ListingsManager() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function resetForm() {
+    setForm(initialForm);
+    setImageFile(null);
+    setImagePreview("");
+    setExistingImage("");
+    setEditingId(null);
+    setError("");
+  }
+
   function handleCityChange(city: string) {
     setForm((prev) => ({ ...prev, city, district: "" }));
   }
 
   const districtOptions = getDistrictsForProvince(form.city);
+  const previewSrc = imagePreview || existingImage;
 
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -59,17 +86,46 @@ export default function ListingsManager() {
     setImagePreview(file ? URL.createObjectURL(file) : "");
   }
 
+  function handleToggleForm() {
+    if (formOpen) {
+      resetForm();
+      setFormOpen(false);
+      return;
+    }
+    resetForm();
+    setFormOpen(true);
+  }
+
+  function handleEdit(listing: ListingRecord) {
+    setForm({
+      title: listing.title,
+      district: listing.district,
+      city: listing.city,
+      status: listing.status,
+      category: listing.category,
+      price: listing.price,
+      featuresText: listing.features.join(", "),
+      link: listing.link ?? "",
+    });
+    setImageFile(null);
+    setImagePreview("");
+    setExistingImage(listing.image);
+    setEditingId(listing.id);
+    setError("");
+    setFormOpen(true);
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!imageFile) {
+    if (!editingId && !imageFile) {
       setError("Lütfen bir fotoğraf seçin.");
       return;
     }
     setSubmitting(true);
     setError("");
     try {
-      const imageUrl = await uploadListingImage(imageFile);
-      await createListing({
+      const imageUrl = imageFile ? await uploadListingImage(imageFile) : existingImage;
+      const payload = {
         title: form.title,
         district: form.district,
         city: form.city,
@@ -81,13 +137,21 @@ export default function ListingsManager() {
           .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
-      });
-      setForm(initialForm);
-      setImageFile(null);
-      setImagePreview("");
+        link: normalizeLink(form.link),
+      };
+      if (editingId) {
+        await updateListing(editingId, payload);
+      } else {
+        await createListing(payload);
+      }
+      resetForm();
       setFormOpen(false);
     } catch {
-      setError("Portföy eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+      setError(
+        editingId
+          ? "Portföy güncellenirken bir hata oluştu. Lütfen tekrar deneyin."
+          : "Portföy eklenirken bir hata oluştu. Lütfen tekrar deneyin."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -95,6 +159,10 @@ export default function ListingsManager() {
 
   async function handleDelete(id: string) {
     if (!confirm("Bu portföyü silmek istediğinize emin misiniz?")) return;
+    if (editingId === id) {
+      resetForm();
+      setFormOpen(false);
+    }
     await deleteListing(id);
   }
 
@@ -102,7 +170,7 @@ export default function ListingsManager() {
     <div className="space-y-4">
       <div className="flex justify-end">
         <button
-          onClick={() => setFormOpen((prev) => !prev)}
+          onClick={handleToggleForm}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-primary-500 text-white hover:bg-primary-600 transition-colors"
         >
           <Plus size={16} />
@@ -192,7 +260,11 @@ export default function ListingsManager() {
             <label className="flex items-center gap-3 form-input cursor-pointer">
               <ImagePlus size={16} className="text-primary-500 shrink-0" />
               <span className="truncate text-sm text-ink-soft">
-                {imageFile ? imageFile.name : "Fotoğraf seçin"}
+                {imageFile
+                  ? imageFile.name
+                  : editingId
+                    ? "Yeni fotoğraf seçin (opsiyonel)"
+                    : "Fotoğraf seçin"}
               </span>
               <input
                 type="file"
@@ -201,12 +273,22 @@ export default function ListingsManager() {
                 onChange={handleImageChange}
               />
             </label>
-            {imagePreview && (
+            {previewSrc && (
               <div className="relative w-20 h-14 rounded-md overflow-hidden mt-2 bg-cream-dark">
-                <Image src={imagePreview} alt="Önizleme" fill className="object-cover" />
+                <Image src={previewSrc} alt="Önizleme" fill className="object-cover" />
               </div>
             )}
           </Field>
+          <div className="sm:col-span-2 lg:col-span-2">
+            <label className="form-label">Devamı Linki</label>
+            <input
+              type="text"
+              placeholder="https://..."
+              className="form-input"
+              value={form.link}
+              onChange={(e) => update("link", e.target.value)}
+            />
+          </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <label className="form-label">Özellikler (virgülle ayırın)</label>
             <input
@@ -226,7 +308,13 @@ export default function ListingsManager() {
               disabled={submitting}
               className="w-full sm:w-auto px-6 py-3 rounded-full bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 transition-colors disabled:opacity-60"
             >
-              {submitting ? "Ekleniyor..." : "Portföyü Yayınla"}
+              {submitting
+                ? editingId
+                  ? "Kaydediliyor..."
+                  : "Ekleniyor..."
+                : editingId
+                  ? "Değişiklikleri Kaydet"
+                  : "Portföyü Yayınla"}
             </button>
           </div>
         </form>
@@ -278,13 +366,22 @@ export default function ListingsManager() {
                     <td className="px-4 py-3 text-muted">{categoryLabels[listing.category]}</td>
                     <td className="px-4 py-3 text-ink font-semibold">{listing.price}</td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleDelete(listing.id)}
-                        className="text-muted hover:text-red-600 transition-colors"
-                        aria-label="Sil"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(listing)}
+                          className="text-muted hover:text-primary-600 transition-colors"
+                          aria-label="Düzenle"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(listing.id)}
+                          className="text-muted hover:text-red-600 transition-colors"
+                          aria-label="Sil"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

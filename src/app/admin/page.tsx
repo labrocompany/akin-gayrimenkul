@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { LogOut, Trash2, Inbox } from "lucide-react";
+import Image from "next/image";
 import { db, auth } from "@/lib/firebase";
 import { useAdminUser } from "@/hooks/useAdminUser";
 import Logo from "@/components/Logo";
@@ -79,6 +80,20 @@ const columnsByTab: Record<TabKey, { key: string; label: string }[]> = {
 function formatDate(value: Timestamp | undefined) {
   if (!value) return "-";
   return value.toDate().toLocaleString("tr-TR");
+}
+
+function isHttpUrl(value: unknown): value is string {
+  return typeof value === "string" && /^https?:\/\//.test(value);
+}
+
+function photoUrls(item: Submission) {
+  return Array.isArray(item.fotoUrl) ? item.fotoUrl.filter(isHttpUrl) : [];
+}
+
+function renderCell(colKey: string, item: Submission) {
+  const value = item[colKey];
+  if (Array.isArray(value)) return value.join(", ") || "-";
+  return value || "-";
 }
 
 export default function AdminDashboardPage() {
@@ -175,6 +190,8 @@ export default function AdminDashboardPage() {
           <ListingsManager />
         ) : activeTab === "blogYazilari" ? (
           <BlogManager />
+        ) : activeTab === "portfoyTalepleri" ? (
+          <PortfoyTalepleriList items={items} loading={itemsLoading} onDelete={handleDelete} />
         ) : (
           <div className="bg-white rounded-2xl border border-border-soft overflow-hidden">
             {itemsLoading ? (
@@ -206,9 +223,7 @@ export default function AdminDashboardPage() {
                         </td>
                         {columns.map((col) => (
                           <td key={col.key} className="px-4 py-3 max-w-xs text-ink">
-                            {Array.isArray(item[col.key])
-                              ? item[col.key].join(", ")
-                              : item[col.key] || "-"}
+                            {renderCell(col.key, item)}
                           </td>
                         ))}
                         <td className="px-4 py-3 text-right">
@@ -229,6 +244,107 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function PortfoyTalepleriList({
+  items,
+  loading,
+  onDelete,
+}: {
+  items: Submission[];
+  loading: boolean;
+  onDelete: (id: string) => void;
+}) {
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl border border-border-soft">
+        <p className="p-8 text-center text-sm text-muted">Yükleniyor...</p>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-border-soft">
+        <div className="p-12 flex flex-col items-center justify-center text-center gap-3">
+          <Inbox size={28} className="text-muted" />
+          <p className="text-sm text-muted">Bu kategoride henüz kayıt yok.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const details = [
+    { key: "telefon", label: "Telefon" },
+    { key: "eposta", label: "E-posta" },
+    { key: "gayrimenkulTuru", label: "Tür" },
+    { key: "islemTipi", label: "İşlem" },
+    { key: "il", label: "İl" },
+    { key: "ilce", label: "İlçe" },
+    { key: "mahalle", label: "Mahalle" },
+    { key: "metrekare", label: "m²" },
+    { key: "odaSayisi", label: "Oda" },
+    { key: "binaYasi", label: "Bina Yaşı" },
+    { key: "fiyatBeklentisi", label: "Fiyat Beklentisi" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {items.map((item) => {
+        const photos = photoUrls(item);
+        return (
+          <article key={item.id} className="bg-white rounded-2xl border border-border-soft p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-semibold text-ink text-base">{item.adSoyad || "-"}</h2>
+                <p className="text-xs text-muted mt-1">{formatDate(item.createdAt)}</p>
+              </div>
+              <button
+                onClick={() => onDelete(item.id)}
+                className="text-muted hover:text-red-600 transition-colors"
+                aria-label="Sil"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+              {details.map((field) => (
+                <div key={field.key}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">{field.label}</p>
+                  <p className="text-sm text-ink mt-0.5">{item[field.key] || "-"}</p>
+                </div>
+              ))}
+            </div>
+
+            {item.aciklama ? (
+              <p className="text-sm text-ink-soft mt-4 leading-relaxed">{item.aciklama}</p>
+            ) : null}
+
+            <div className="mt-4 pt-4 border-t border-border-soft">
+              {photos.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {photos.map((url) => (
+                    <a
+                      key={url}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative w-32 h-24 rounded-xl overflow-hidden bg-cream-dark"
+                    >
+                      <Image src={url} alt="Yüklenen fotoğraf" fill sizes="128px" className="object-cover" />
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted">Fotoğraf yüklenmemiş</p>
+              )}
+            </div>
+          </article>
+        );
+      })}
     </div>
   );
 }
