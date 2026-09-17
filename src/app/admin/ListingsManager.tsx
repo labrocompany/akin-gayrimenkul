@@ -13,6 +13,7 @@ import {
 import type { ListingCategory, ListingStatus } from "@/lib/listings";
 import { categoryLabels } from "@/lib/listings";
 import { withBasePath } from "@/lib/paths";
+import { turkishProvinces, getDistrictsForProvince } from "@/lib/turkey";
 
 const initialForm = {
   title: "",
@@ -45,6 +46,12 @@ export default function ListingsManager() {
   function update<K extends keyof typeof initialForm>(field: K, value: (typeof initialForm)[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
+
+  function handleCityChange(city: string) {
+    setForm((prev) => ({ ...prev, city, district: "" }));
+  }
+
+  const districtOptions = getDistrictsForProvince(form.city);
 
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -117,23 +124,36 @@ export default function ListingsManager() {
               onChange={(e) => update("title", e.target.value)}
             />
           </Field>
-          <Field label="İlçe / Bölge">
-            <input
+          <Field label="Şehir">
+            <select
               required
-              type="text"
-              className="form-input"
+              className="form-select"
+              value={form.city}
+              onChange={(e) => handleCityChange(e.target.value)}
+            >
+              <option value="">Seçiniz</option>
+              {turkishProvinces.map((province) => (
+                <option key={province} value={province}>
+                  {province}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="İlçe / Bölge">
+            <select
+              required
+              disabled={!form.city}
+              className="form-select"
               value={form.district}
               onChange={(e) => update("district", e.target.value)}
-            />
-          </Field>
-          <Field label="Şehir">
-            <input
-              required
-              type="text"
-              className="form-input"
-              value={form.city}
-              onChange={(e) => update("city", e.target.value)}
-            />
+            >
+              <option value="">Seçiniz</option>
+              {districtOptions.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Durum">
             <select
