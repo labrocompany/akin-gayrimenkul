@@ -18,6 +18,7 @@ export const navLinks = [
   { href: "/portfoyler", label: "Portföyler" },
   { href: "/portfoyunuzu-satalim", label: "Portföyünüzü Satalım" },
   { href: "/proje-satis-danismanlik", label: "Proje Satış & Danışmanlık" },
+  { href: "/blog", label: "Blog" },
   { href: "/iletisim", label: "İletişim" },
 ];
 

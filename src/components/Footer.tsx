@@ -14,6 +14,7 @@ const hizmetler = [
 const kurumsal = [
   { label: "Hakkımızda", href: "/hakkimizda" },
   { label: "Ekibimiz", href: "/ekibimiz" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const portfoyler = [

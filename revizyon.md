@@ -18,7 +18,7 @@
 - [x] İletişim içine instagram adresi eklensin (@akinemlakvegayrimenkul, iletisim sayfası ve Footer)
 - [x] Mail adresi [info@akinemlakyatirim.com.tr](mailto:info@akinemlakyatirim.com.tr) olarak güncellensin (src/lib/site.ts)
 - [x] Sayfanın altındaki hakkımızda, ekibimiz, kariyer sayfaları iletişime gidiyor - düzeltildi (/hakkimizda, /ekibimiz, /kariyer sayfaları oluşturuldu ve Footer'dan yönlendirildi)
-- [x] Blog menüsü ana sayfaya gidiyor - düzeltildi (Blog içeriği/altyapısı olmadığından Footer'dan kaldırıldı, yanıltıcı link bırakılmadı)
+- [x] Blog menüsü ana sayfaya gidiyor - düzeltildi (Blog altyapısı kuruldu: /blog sayfası, admin panelden yazı ekleme/silme, üst menü ve Footer'da aktif link)
 - [x] Portföyler aynı sayfada aynı görselleri gösteriyor - düzeltilmeli
 - [x] Hizmetlerimizdeki başlıklar aynı sayfalara gidiyor, ayrı sayfalar olmalı
 - [x] İletişim altındaki sosyal medya simgeleri bizimkilere gitmiyor - Instagram gerçek linke bağlandı, Facebook ve LinkedIn kaldırıldı (Footer.tsx, site.ts)
