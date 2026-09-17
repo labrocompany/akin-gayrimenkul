@@ -62,14 +62,16 @@ function PortfoylerContent() {
   const [activeTab, setActiveTab] = useState<ListingCategory | "tumu">(
     isValidTabKey(categoryParam) ? categoryParam : "tumu"
   );
+  const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
   const [listings, setListings] = useState<ListingRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  if (categoryParam !== prevCategoryParam) {
+    setPrevCategoryParam(categoryParam);
     if (isValidTabKey(categoryParam)) {
       setActiveTab(categoryParam);
     }
-  }, [categoryParam]);
+  }
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -79,6 +81,13 @@ function PortfoylerContent() {
   const [sortKey, setSortKey] = useState<SortKey>("onerilen");
   const [page, setPage] = useState(1);
 
+  const filterKey = `${activeTab}|${searchTerm}|${statusFilter}|${districtFilter}|${minPrice}|${maxPrice}|${sortKey}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
+
   useEffect(() => {
     const unsubscribe = subscribeListings((data) => {
       setListings(data);
@@ -86,10 +95,6 @@ function PortfoylerContent() {
     });
     return unsubscribe;
   }, []);
-
-  useEffect(() => {
-    setPage(1);
-  }, [activeTab, searchTerm, statusFilter, districtFilter, minPrice, maxPrice, sortKey]);
 
   const filtered = useMemo(() => {
     let result = listings;

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
-import { Plus, Trash2, Inbox } from "lucide-react";
+import { Plus, Trash2, Inbox, ImagePlus } from "lucide-react";
 import {
   createListing,
   deleteListing,
   subscribeListings,
+  uploadListingImage,
   type ListingRecord,
 } from "@/lib/listingsService";
 import type { ListingCategory, ListingStatus } from "@/lib/listings";
@@ -20,7 +21,6 @@ const initialForm = {
   status: "SATILIK" as ListingStatus,
   category: "konut" as ListingCategory,
   price: "",
-  image: "",
   featuresText: "",
 };
 
@@ -28,6 +28,8 @@ export default function ListingsManager() {
   const [listings, setListings] = useState<ListingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(initialForm);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -44,11 +46,22 @@ export default function ListingsManager() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setImageFile(file);
+    setImagePreview(file ? URL.createObjectURL(file) : "");
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!imageFile) {
+      setError("Lütfen bir fotoğraf seçin.");
+      return;
+    }
     setSubmitting(true);
     setError("");
     try {
+      const imageUrl = await uploadListingImage(imageFile);
       await createListing({
         title: form.title,
         district: form.district,
@@ -56,13 +69,15 @@ export default function ListingsManager() {
         status: form.status,
         category: form.category,
         price: form.price,
-        image: form.image,
+        image: imageUrl,
         features: form.featuresText
           .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
       });
       setForm(initialForm);
+      setImageFile(null);
+      setImagePreview("");
       setFormOpen(false);
     } catch {
       setError("Portföy eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
@@ -153,15 +168,24 @@ export default function ListingsManager() {
               onChange={(e) => update("price", e.target.value)}
             />
           </Field>
-          <Field label="Görsel URL">
-            <input
-              required
-              type="text"
-              placeholder="https://..."
-              className="form-input"
-              value={form.image}
-              onChange={(e) => update("image", e.target.value)}
-            />
+          <Field label="Fotoğraf">
+            <label className="flex items-center gap-3 form-input cursor-pointer">
+              <ImagePlus size={16} className="text-primary-500 shrink-0" />
+              <span className="truncate text-sm text-ink-soft">
+                {imageFile ? imageFile.name : "Fotoğraf seçin"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+            {imagePreview && (
+              <div className="relative w-20 h-14 rounded-md overflow-hidden mt-2 bg-cream-dark">
+                <Image src={imagePreview} alt="Önizleme" fill className="object-cover" />
+              </div>
+            )}
           </Field>
           <div className="sm:col-span-2 lg:col-span-3">
             <label className="form-label">Özellikler (virgülle ayırın)</label>

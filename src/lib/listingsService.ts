@@ -10,7 +10,8 @@ import {
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
 import type { Listing } from "@/lib/listings";
 
 export type ListingRecord = Listing & { id: string };
@@ -58,4 +59,11 @@ export async function createListing(data: ListingInput) {
 
 export async function deleteListing(id: string) {
   await deleteDoc(doc(db, "ilanlar", id));
+}
+
+export async function uploadListingImage(file: File) {
+  const path = `ilanlar/${Date.now()}-${file.name}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
 }
