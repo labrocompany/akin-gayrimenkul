@@ -14,8 +14,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm border-b border-border-soft/70">
-      <div className="container-page flex items-center justify-between py-3 gap-4">
-        <Logo />
+      <div className="container-page flex items-center justify-between py-2.5 sm:py-3 gap-4">
+        <Logo size="lg" />
 
         <nav className="hidden lg:flex items-center gap-7">
           {navLinks.map((link) => {

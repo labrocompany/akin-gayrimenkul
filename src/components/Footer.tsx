@@ -31,7 +31,7 @@ export default function Footer() {
       <div className="container-page py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.1fr] gap-10">
           <div>
-            <Logo className="items-start" />
+            <Logo className="items-start" size="md" />
             <p className="text-sm text-muted mt-4 max-w-[240px] leading-relaxed">
               Gayrimenkulde doğru strateji, doğru alıcı ve doğru sonuç için
               yanınızdayız.

@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: "Akın Emlak Gayrimenkul & Danışmanlık",
   description:
     "Bireysel portföy satışından büyük ölçekli projelerin satış yönetimine kadar tüm süreci profesyonel ekibimizle birlikte yönetiyoruz.",
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }, { url: "/favicon.ico" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
