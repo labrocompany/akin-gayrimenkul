@@ -90,11 +90,11 @@ export default function TeamPage() {
         <div className="bg-white rounded-2xl border border-border-soft p-6 sm:p-8 grid sm:grid-cols-[auto_1fr] gap-6 items-center">
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 bg-primary-500/10 flex items-center justify-center">
             <span className="text-2xl sm:text-3xl font-extrabold text-primary-600">
-              VB
+              HVY
             </span>
           </div>
           <div>
-            <h3 className="font-bold text-ink text-lg">Vehbi Bey</h3>
+            <h3 className="font-bold text-ink text-lg">Hüsamettin Vehbi Yay</h3>
             <p className="text-sm text-primary-600 font-semibold mt-0.5">
               Kurucu &amp; Yönetici Ortak
             </p>
