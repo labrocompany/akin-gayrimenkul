@@ -21,11 +21,13 @@ import { useAdminUser } from "@/hooks/useAdminUser";
 import Logo from "@/components/Logo";
 import ListingsManager from "@/app/admin/ListingsManager";
 import BlogManager from "@/app/admin/BlogManager";
+import TeamManager from "@/app/admin/TeamManager";
 
 type Submission = { id: string } & DocumentData;
 
 const tabs = [
   { key: "ilanlar", label: "Portföyler (Site)" },
+  { key: "ekipUyeleri", label: "Ekibimiz" },
   { key: "blogYazilari", label: "Blog" },
   { key: "portfoyTalepleri", label: "Portföy Talepleri" },
   { key: "hizliTalepler", label: "Hızlı Talepler" },
@@ -37,6 +39,7 @@ type TabKey = (typeof tabs)[number]["key"];
 
 const columnsByTab: Record<TabKey, { key: string; label: string }[]> = {
   ilanlar: [],
+  ekipUyeleri: [],
   blogYazilari: [],
   portfoyTalepleri: [
     { key: "adSoyad", label: "Ad Soyad" },
@@ -110,7 +113,7 @@ export default function AdminDashboardPage() {
   }, [loading, user, router]);
 
   useEffect(() => {
-    if (!user || activeTab === "ilanlar" || activeTab === "blogYazilari") return;
+    if (!user || activeTab === "ilanlar" || activeTab === "blogYazilari" || activeTab === "ekipUyeleri") return;
     const q = query(collection(db, activeTab), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,
@@ -188,6 +191,8 @@ export default function AdminDashboardPage() {
 
         {activeTab === "ilanlar" ? (
           <ListingsManager />
+        ) : activeTab === "ekipUyeleri" ? (
+          <TeamManager />
         ) : activeTab === "blogYazilari" ? (
           <BlogManager />
         ) : activeTab === "portfoyTalepleri" ? (

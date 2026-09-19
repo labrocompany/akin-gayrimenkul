@@ -1,7 +1,5 @@
 import Image from "next/image";
 import {
-  Phone,
-  Mail,
   UserCog,
   Users,
   Megaphone,
@@ -10,7 +8,7 @@ import {
 } from "lucide-react";
 import Button from "@/components/Button";
 import CtaBanner from "@/components/CtaBanner";
-import { siteConfig } from "@/lib/site";
+import TeamMembers from "@/components/TeamMembers";
 import { withBasePath } from "@/lib/paths";
 
 const departments = [
@@ -86,40 +84,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <section className="container-page py-10">
-        <div className="bg-white rounded-2xl border border-border-soft p-6 sm:p-8 grid sm:grid-cols-[auto_1fr] gap-6 items-center">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 bg-primary-500/10 flex items-center justify-center">
-            <span className="text-2xl sm:text-3xl font-extrabold text-primary-600">
-              HVY
-            </span>
-          </div>
-          <div>
-            <h3 className="font-bold text-ink text-lg">Hüsamettin Vehbi Yay</h3>
-            <p className="text-sm text-primary-600 font-semibold mt-0.5">
-              Kurucu &amp; Yönetici Ortak
-            </p>
-            <p className="text-[13.5px] text-muted mt-2 leading-relaxed max-w-xl">
-              Akın Emlak Gayrimenkul &amp; Danışmanlık&apos;ı, güven ve
-              kurumsallık ilkeleriyle kurarak İstanbul&apos;un farklı
-              bölgelerinde hizmet veren bir marka haline getirdi. Portföy ve
-              proje satış süreçlerinde ekibimize doğrudan öncülük eder.
-            </p>
-            <div className="flex flex-wrap items-center gap-4 mt-3 text-[13px] text-ink-soft">
-              <a href={siteConfig.phoneHref} className="flex items-center gap-1.5 hover:text-primary-600">
-                <Phone size={14} className="text-primary-500" />
-                {siteConfig.phone}
-              </a>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="flex items-center gap-1.5 hover:text-primary-600"
-              >
-                <Mail size={14} className="text-primary-500" />
-                {siteConfig.email}
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <TeamMembers />
 
       <section className="container-page py-8">
         <h2 className="text-xl sm:text-2xl font-bold text-ink text-center mb-8">
