@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
-const isGithubPages = process.env.GITHUB_ACTIONS === "true";
+const isFirebaseAppHosting = Boolean(process.env.FIREBASE_APP_HOSTING);
+const isGithubPages = process.env.GITHUB_ACTIONS === "true" && !isFirebaseAppHosting;
 const basePath = isGithubPages ? "/akin-gayrimenkul" : "";
 
 const nextConfig: NextConfig = {
   agentRules: false,
-  output: "export",
+  ...(isFirebaseAppHosting ? {} : { output: "export" as const }),
   images: {
     unoptimized: true,
   },

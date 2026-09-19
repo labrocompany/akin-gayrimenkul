@@ -20,16 +20,5 @@
   },
   "storage": {
     "rules": "storage.rules"
-  },
-  "apphosting": {
-    "backendId": "akin-gayrimenkul",
-    "rootDir": "/",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      ".next"
-    ]
   }
 }
